@@ -1,0 +1,27 @@
+name: Build VST3
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DMONK_FORMATS=VST3
+
+      - name: Build
+        run: cmake --build build --config Release --target YoloMonkMachine_VST3 --parallel 4
+
+      - name: Upload VST3
+        uses: actions/upload-artifact@v4
+        with:
+          name: YOLO-Monk-Machine-VST3-${{ runner.os }}
+          path: build/YoloMonkMachine_artefacts/Release/VST3
